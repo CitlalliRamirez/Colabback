@@ -1,0 +1,1 @@
+web: gunicorn colabback.wsgi --log-file -

@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('backtablas/', include('usuario.urls')),
@@ -30,4 +31,4 @@ urlpatterns = [
     path('backtablas/listado', include('listausuario.urls')),
     path('backtablas/listadocurso', include('listacurso.urls')),
     path('backtablas/envia', include('enviacorreo.urls')),
-]
+] + static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
