@@ -25,6 +25,7 @@ urlpatterns = [
     path('backtablas/', include('alumno.urls')),
     path('backtablas/', include('curso.urls')),
     path('backtablas/', include('chat.urls')),
+    path('backtablas/autentificar', include('authtoken.urls')),
     path('backtablas/', include('alumnocurso.urls')),
     path('backtablas/', include('alumnochat.urls')),
     path('backtablas/guarda', include('guardacurso.urls')),
