@@ -19,7 +19,7 @@ def guarda(request):
         idprofesor = request.POST.get('idprofesor')
         numAlumnos = Alumno.objects.filter(alumno_semestre=semestre,alumno_carrera=carrera).count()
         listaAlumn = Alumno.objects.filter(alumno_semestre=semestre,alumno_carrera=carrera)
-        if numAlumnos>=3:
+        if numAlumnos>=4:
             data='ok'
             Curso.objects.create(curso_nombre=nombre,profesor_id=idprofesor)
             idcurso = Curso.objects.last().id

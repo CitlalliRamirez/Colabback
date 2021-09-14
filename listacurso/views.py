@@ -25,18 +25,33 @@ class lista_cursos():
 def jsonDefault(object):
     return object.__dict__
 
-    
+@csrf_exempt     
 def listadocurso(request):
     cad = []
-    cursos = Curso.objects.all()
     data=''
-    for curso in cursos:
-        alumnoc = Alumnocurso.objects.filter(curso=curso.id).last()
-        alumnoId = alumnoc.alumno.id
-        datosAlum = Alumno.objects.filter(id=alumnoId)
-        data = datosAlum[0].alumno_carrera
-        obj = lista_cursos(curso.curso_nombre, datosAlum[0].alumno_semestre,curso.id,datosAlum[0].alumno_carrera,curso.profesor.id)
-        cad.append(json.loads(obj.toJSON()))
+    if request.method=='POST':
+        idTipo = request.POST.get('tipo')
+        idU =   request.POST.get('idU')
+        if idTipo=="Alumno":
+            AC = Alumnocurso.objects.filter(alumno_id=idU)
+            for i in AC:
+                curso = Curso.objects.filter(id=i.curso.id)[0]
+                datosAlum = Alumno.objects.filter(id=idU)
+                obj = lista_cursos(curso.curso_nombre, datosAlum[0].alumno_semestre,curso.id,datosAlum[0].alumno_carrera,curso.profesor.id)
+                cad.append(json.loads(obj.toJSON()))      
+        else:
+            if idTipo=="Profesor":#si es profesor
+                data="pro"
+                cursos = Curso.objects.filter(profesor_id=idU)
+            else:
+                cursos = Curso.objects.all()
+            for curso in cursos:
+                alumnoc = Alumnocurso.objects.filter(curso=curso.id).last()
+                alumnoId = alumnoc.alumno.id
+                datosAlum = Alumno.objects.filter(id=alumnoId)
+                data = datosAlum[0].alumno_carrera
+                obj = lista_cursos(curso.curso_nombre, datosAlum[0].alumno_semestre,curso.id,datosAlum[0].alumno_carrera,curso.profesor.id)
+                cad.append(json.loads(obj.toJSON()))
 
     return HttpResponse(json.dumps(cad))    
 

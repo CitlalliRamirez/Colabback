@@ -22,15 +22,15 @@ def autentificar(request):
             num_ad = Administrador.objects.filter(usuario=id).count()
             if num_al!=0:
                 dat_al = Alumno.objects.filter(usuario=id)[0]
-                encoded = jwt.encode({"Tipo": "Alumno","Nombre":dat_al.alumno_nombre}, key, algorithm="HS256")
+                encoded = jwt.encode({"Tipo": "Alumno","Nombre":dat_al.alumno_nombre,"Id":dat_al.id}, key, algorithm="HS256")
                 data=encoded
             elif num_pr!=0:
                 dat_pr = Profesor.objects.filter(usuario=id)[0]
-                encoded = jwt.encode({"Tipo": "Profesor","Nombre":dat_pr.profesor_nombre}, key, algorithm="HS256")
+                encoded = jwt.encode({"Tipo": "Profesor","Nombre":dat_pr.profesor_nombre,"Id":dat_pr.id}, key, algorithm="HS256")
                 data=encoded
             elif num_ad!=0:
                 dat_ad = Administrador.objects.filter(usuario=id)[0]
-                encoded = jwt.encode({"Tipo": "Administrador","Nombre":dat_ad.administrador_nombre}, key, algorithm="HS256")
+                encoded = jwt.encode({"Tipo": "Administrador","Nombre":dat_ad.administrador_nombre,"Id":dat_ad.id}, key, algorithm="HS256")
                 data=encoded
             else:
                 data=-1

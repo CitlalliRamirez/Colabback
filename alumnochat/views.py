@@ -95,7 +95,7 @@ def listaAlumnosEditar(request):
 @csrf_exempt
 def actualizarC(request):
     data = "ok"
-    if request.method=='POST':
+    if request.method=='POST': 
         idchat = request.POST.get('id')
         nombre = request.POST.get('nombre')
         editor = request.POST.get('editor')
@@ -103,7 +103,7 @@ def actualizarC(request):
         observadores = request.POST.get('observadores')
         obs = observadores.split(',')
         Chat.objects.filter(pk=idchat).update(chat_nombre=nombre)
-        Alumnochat.objects.filter(pk=idchat).delete()
+        Alumnochat.objects.filter(chat_id=idchat).delete()
         Alumnochat.objects.create(rol='Editor',chat_id=idchat,alumno_id=editor)
         Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
         for i in obs:
