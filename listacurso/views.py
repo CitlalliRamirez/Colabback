@@ -73,18 +73,39 @@ def jsonDefault(object):
 @csrf_exempt    
 def listadochat(request):
     cad = []
+    data=None
     if request.method=='POST':
         idcurso = request.POST.get('id')
-        chats=Chat.objects.filter(curso_id=idcurso)
-        for chat in chats:
-            cad_obs=[]
-            alumn_chat_editor = Alumnochat.objects.filter(chat_id=chat.id,rol='Editor')[0]
-            alumn_chat_mod = Alumnochat.objects.filter(chat_id=chat.id,rol='Moderador')[0]
-            alumn_chat_obs = Alumnochat.objects.filter(chat_id=chat.id,rol='Observador')
-            for i in alumn_chat_obs:
-                cad_obs.append(i.alumno_id)
-            obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha_hora.strftime("%m/%d/%Y"),
-                alumn_chat_editor.alumno_id,alumn_chat_mod.alumno_id,cad_obs)
-            cad.append(json.loads(obj.toJSON()))
+        Tipo= request.POST.get('tipo')
+        idU =int(request.POST.get('idU'))
+        if Tipo=="Alumno":
+            chats=Chat.objects.filter(curso_id=idcurso)
+            for chat in chats:
+                Num= Alumnochat.objects.filter(chat_id=chat.id,alumno_id=idU).count()
+                if Num!=0:
+                    idUU =Alumnochat.objects.filter(chat_id=chat.id,alumno_id=idU)[0]
+                    if idUU.alumno_id ==idU:
+                        cad_obs=[]
+                        alumn_chat_editor = Alumnochat.objects.filter(chat_id=chat.id,rol='Editor')[0]
+                        alumn_chat_mod = Alumnochat.objects.filter(chat_id=chat.id,rol='Moderador')[0]
+                        alumn_chat_obs = Alumnochat.objects.filter(chat_id=chat.id,rol='Observador')
+                        for i in alumn_chat_obs:
+                            cad_obs.append(i.alumno_id)
+                        obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha_hora.strftime("%m/%d/%Y"),
+                            alumn_chat_editor.alumno_id,alumn_chat_mod.alumno_id,cad_obs)
+                        cad.append(json.loads(obj.toJSON()))
+
+        else:
+            chats=Chat.objects.filter(curso_id=idcurso)
+            for chat in chats:
+                cad_obs=[]
+                alumn_chat_editor = Alumnochat.objects.filter(chat_id=chat.id,rol='Editor')[0]
+                alumn_chat_mod = Alumnochat.objects.filter(chat_id=chat.id,rol='Moderador')[0]
+                alumn_chat_obs = Alumnochat.objects.filter(chat_id=chat.id,rol='Observador')
+                for i in alumn_chat_obs:
+                    cad_obs.append(i.alumno_id)
+                obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha_hora.strftime("%m/%d/%Y"),
+                    alumn_chat_editor.alumno_id,alumn_chat_mod.alumno_id,cad_obs)
+                cad.append(json.loads(obj.toJSON()))
 
     return HttpResponse(json.dumps(cad))  
