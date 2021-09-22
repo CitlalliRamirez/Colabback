@@ -111,3 +111,44 @@ def actualizarC(request):
         
        
     return HttpResponse(data)
+
+@csrf_exempt
+def existecurso(request):
+    data=None
+    if request.method=='POST':
+        semestre = request.POST.get("semestre")
+        carrera = request.POST.get("carrera")
+        num = Alumno.objects.filter(alumno_semestre=semestre,alumno_carrera=carrera).count()
+        if num>0:
+            idd = Alumno.objects.filter(alumno_semestre=semestre,alumno_carrera=carrera).last().id
+            numac = Alumnocurso.objects.filter(alumno_id=idd).count()
+            if numac>0:
+                data = Alumnocurso.objects.filter(alumno_id=idd)[0].curso_id
+            else:
+                data=0
+        else:
+            data=0
+    return HttpResponse(data)
+
+@csrf_exempt
+def insertacurso(request):
+    data=None
+    if request.method=='POST':
+        idcurso = int(request.POST.get("idcurso"))
+        id  = int(request.POST.get("id"))
+        if idcurso>0:
+            #insertar a alumnocurso
+            Alumnocurso.objects.create(curso_id=idcurso,alumno_id=id)
+            data='si'
+        else:
+            data='no'
+    return HttpResponse(data)
+
+@csrf_exempt
+def rol(request):
+    data=None
+    if request.method=='POST':
+        id = int(request.POST.get("id"))
+        rol = Alumnochat.objects.filter(alumno_id=id)[0].rol
+        data=rol
+    return HttpResponse(data)
