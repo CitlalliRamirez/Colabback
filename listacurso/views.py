@@ -57,10 +57,11 @@ def listadocurso(request):
 
 #listar los chats
 class lista_chat():
-    def __init__(self,nombre,id,fecha,editor,moderador,observador):
+    def __init__(self,nombre,id,fecha,hora,editor,moderador,observador):
         self.nombre = nombre
         self.id = id
         self.fecha = fecha
+        self.hora = hora
         self.editor=editor
         self.moderador=moderador
         self.observador=observador
@@ -91,7 +92,7 @@ def listadochat(request):
                         alumn_chat_obs = Alumnochat.objects.filter(chat_id=chat.id,rol='Observador')
                         for i in alumn_chat_obs:
                             cad_obs.append(i.alumno_id)
-                        obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha_hora.strftime("%m/%d/%Y"),
+                        obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha,str(chat.chat_hora),
                             alumn_chat_editor.alumno_id,alumn_chat_mod.alumno_id,cad_obs)
                         cad.append(json.loads(obj.toJSON()))
 
@@ -104,8 +105,8 @@ def listadochat(request):
                 alumn_chat_obs = Alumnochat.objects.filter(chat_id=chat.id,rol='Observador')
                 for i in alumn_chat_obs:
                     cad_obs.append(i.alumno_id)
-                obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha_hora.strftime("%m/%d/%Y"),
+                obj=lista_chat(chat.chat_nombre,chat.id,chat.chat_fecha,str(chat.chat_hora),
                     alumn_chat_editor.alumno_id,alumn_chat_mod.alumno_id,cad_obs)
                 cad.append(json.loads(obj.toJSON()))
 
-    return HttpResponse(json.dumps(cad))  
+    return HttpResponse(json.dumps(cad))

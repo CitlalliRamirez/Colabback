@@ -32,12 +32,14 @@ def jsonDefault(object):
 @csrf_exempt
 def listaAlumnos(request):
     cad = []
-    data=None
+    data= None
     if request.method=='POST':
-        alum_en_chat =[]#todos los alumnos que estan en chats de ese curso
         idcurso = request.POST.get('id')
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        alum_en_chat =[]#todos los alumnos que estan en chats de ese curso que coinciden en hora y fecha
         idalumnos = Alumnocurso.objects.filter(curso_id=idcurso)#alumnos de ese curso
-        chatscurso = Chat.objects.filter(curso_id=idcurso)
+        chatscurso = Chat.objects.filter(chat_fecha=fecha,chat_hora=hora)# chats que coincida con la fecha y hora que se quiere registrar otro chat  
         for i in chatscurso:
             alumno_por_chat= Alumnochat.objects.filter(chat_id=i.id)
             for j in alumno_por_chat:
@@ -48,6 +50,7 @@ def listaAlumnos(request):
                 obj = lista_alum_curso(idal.alumno_id,nombre.alumno_nombre)
                 cad.append(json.loads(obj.toJSON()))
     return HttpResponse(json.dumps(cad))
+ 
 
 @csrf_exempt
 def guardaC(request):
@@ -55,12 +58,14 @@ def guardaC(request):
     if request.method=='POST':
         id = request.POST.get('idcurso')
         nombre = request.POST.get('nombre')
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
         editor = request.POST.get('editor')
         moderador = request.POST.get('moderador')
         observadores = request.POST.get('observadores')
         idprofesor = Curso.objects.filter(id=id)[0].profesor.id
         obs = observadores.split(',')
-        Chat.objects.create(chat_nombre=nombre,chat_conversacion='',profesor_id=idprofesor,curso_id=id)
+        Chat.objects.create(chat_nombre=nombre,chat_conversacion='',chat_fecha=fecha,chat_hora=hora,profesor_id=idprofesor,curso_id=id)
         idchat = Chat.objects.last().id
         Alumnochat.objects.create(rol='Editor',chat_id=idchat,alumno_id=editor)
         Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
@@ -73,13 +78,15 @@ def guardaC(request):
 @csrf_exempt
 def listaAlumnosEditar(request):
     cad = []
-    data=None
+    data= None
     if request.method=='POST':
-        alum_en_chat =[]#todos los alumnos que estan en chats de ese curso
         idchat= int(request.POST.get('id'))
         idcurso = Chat.objects.filter(id=idchat)[0].curso_id
+        alum_en_chat =[]#
+        fecha = request.POST.get('fecha')#"2021-12-06"
+        hora= request.POST.get('hora')#"08:00:00"
         idalumnos = Alumnocurso.objects.filter(curso_id=idcurso)#alumnos de ese curso
-        chatscurso = Chat.objects.filter(curso_id=idcurso)#todos los chats formados de ese curso
+        chatscurso = Chat.objects.filter(chat_fecha=fecha,chat_hora=hora)# todos los chats que estén en la misma hora y fecha al editable
         for i in chatscurso:
             if i.id!=idchat:
                 alumno_por_chat= Alumnochat.objects.filter(chat_id=i.id)
