@@ -81,7 +81,7 @@ def guardaC(request):
             Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
             for i in obs:
                 Alumnochat.objects.create(rol='Observador',chat_id=idchat,alumno_id=i)
-        if(result.count()>=1): #si hay uno o mas, entonces se tiene que revisar que alumnos estan en esos chats y si coincide con uno de estos alumnos, no generar chat
+        elif(result.count()>=1): #si hay uno o mas, entonces se tiene que revisar que alumnos estan en esos chats y si coincide con uno de estos alumnos, no generar chat
            for i in result:
                alumno_por_chat= Alumnochat.objects.filter(chat_id=i.id)
                for j in alumno_por_chat:
@@ -96,6 +96,7 @@ def guardaC(request):
                 Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
                 for i in obs:
                     Alumnochat.objects.create(rol='Observador',chat_id=idchat,alumno_id=i)
+        data=result.count()
         
        
     return HttpResponse(data)
