@@ -65,12 +65,37 @@ def guardaC(request):
         observadores = request.POST.get('observadores')
         idprofesor = Curso.objects.filter(id=id)[0].profesor.id
         obs = observadores.split(',')
-        Chat.objects.create(chat_nombre=nombre,chat_conversacion='',chat_fecha=fecha,chat_hora=hora,profesor_id=idprofesor,curso_id=id)
-        idchat = Chat.objects.last().id
-        Alumnochat.objects.create(rol='Editor',chat_id=idchat,alumno_id=editor)
-        Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
+        respaldo = [] #guarda mis alumnos a guardar en el nuevo chat
+        cont = 0
+        respaldo.append(editor)
+        respaldo.append(moderador)
         for i in obs:
-            Alumnochat.objects.create(rol='Observador',chat_id=idchat,alumno_id=i)
+            respaldo.append(i)
+        alum_en_chat =[] #alumnos que estén en chats a la misma hora y fecha
+        #revisar si ya hay un chat a esa hora y fecha
+        result = Chat.objects.filter(chat_fecha=fecha,chat_hora=hora)
+        if(result.count()==0):
+            Chat.objects.create(chat_nombre=nombre,chat_conversacion='',chat_fecha=fecha,chat_hora=hora,profesor_id=idprofesor,curso_id=id)
+            idchat = Chat.objects.last().id
+            Alumnochat.objects.create(rol='Editor',chat_id=idchat,alumno_id=editor)
+            Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
+            for i in obs:
+                Alumnochat.objects.create(rol='Observador',chat_id=idchat,alumno_id=i)
+        if(result.count()>=1): #si hay uno o mas, entonces se tiene que revisar que alumnos estan en esos chats y si coincide con uno de estos alumnos, no generar chat
+           for i in result:
+               alumno_por_chat= Alumnochat.objects.filter(chat_id=i.id)
+               for j in alumno_por_chat:
+                    alum_en_chat.append(j.alumno_id)
+           for i in respaldo:#itero mis alumnos a guardar
+               if i in alum_en_chat:
+                   cont= cont+1
+           if cont==0: #si no coindicen los alumnos, generar chat
+                Chat.objects.create(chat_nombre=nombre,chat_conversacion='',chat_fecha=fecha,chat_hora=hora,profesor_id=idprofesor,curso_id=id)
+                idchat = Chat.objects.last().id
+                Alumnochat.objects.create(rol='Editor',chat_id=idchat,alumno_id=editor)
+                Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
+                for i in obs:
+                    Alumnochat.objects.create(rol='Observador',chat_id=idchat,alumno_id=i)
         
        
     return HttpResponse(data)
