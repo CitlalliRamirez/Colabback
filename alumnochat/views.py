@@ -73,15 +73,16 @@ def guardaC(request):
             respaldo.append(i)
         alum_en_chat =[] #alumnos que estén en chats a la misma hora y fecha
         #revisar si ya hay un chat a esa hora y fecha
+        NoChat = Chat.objects.filter(chat_fecha=fecha,chat_hora=hora).count()
         result = Chat.objects.filter(chat_fecha=fecha,chat_hora=hora)
-        if(result.count()==0):
+        if(NoChat==0):
             Chat.objects.create(chat_nombre=nombre,chat_conversacion='',chat_fecha=fecha,chat_hora=hora,profesor_id=idprofesor,curso_id=id)
             idchat = Chat.objects.last().id
             Alumnochat.objects.create(rol='Editor',chat_id=idchat,alumno_id=editor)
             Alumnochat.objects.create(rol='Moderador',chat_id=idchat,alumno_id=moderador)
             for i in obs:
                 Alumnochat.objects.create(rol='Observador',chat_id=idchat,alumno_id=i)
-        elif(result.count()>=1): #si hay uno o mas, entonces se tiene que revisar que alumnos estan en esos chats y si coincide con uno de estos alumnos, no generar chat
+        elif(NoChat>=1): #si hay uno o mas, entonces se tiene que revisar que alumnos estan en esos chats y si coincide con uno de estos alumnos, no generar chat
            for i in result:
                alumno_por_chat= Alumnochat.objects.filter(chat_id=i.id)
                for j in alumno_por_chat:
