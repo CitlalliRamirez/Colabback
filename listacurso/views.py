@@ -110,3 +110,26 @@ def listadochat(request):
                 cad.append(json.loads(obj.toJSON()))
 
     return HttpResponse(json.dumps(cad))
+
+#listar los chats
+class lista_grupo():
+    def __init__(self,nombre):
+        self.nombre = nombre
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+# Create your views here.
+def jsonDefault(object):
+    return object.__dict__
+
+@csrf_exempt     
+def listadogrupo(request):
+    cad = []
+    data='ok'
+    if request.method=='POST':
+        carrera = request.POST.get("carrera")
+        semestre = request.POST.get("semestre")
+        lista = Alumno.objects.filter(alumno_semestre=semestre,alumno_carrera=carrera)
+        for i in lista:
+            obj = lista_grupo(i.alumno_nombre)
+            cad.append(json.loads(obj.toJSON()))
+    return HttpResponse(json.dumps(cad)) 
